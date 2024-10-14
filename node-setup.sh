@@ -107,6 +107,73 @@ setup_node() {
 
 
 
+# Function to setup the Optimism package
+optimism_package() {
+    print_info "<=========== Setting up Optimism Package ==============>"
+    
+    # Change directory to odyssey
+    cd odyssey || { print_error "Failed to enter 'odyssey' directory."; exit 1; }
+
+    # Repository clone karein
+    git clone git@github.com:paradigmxyz/optimism-package.git
+    cd optimism-package || { print_error "Failed to enter 'optimism-package' directory."; exit 1; }
+
+    # Odyssey branch par switch karein
+    git switch odyssey
+
+    # Docker image build karein
+    print_info "Building Docker image..."
+    docker build . -t ethpandaops/optimism-contract-deployer:latest --progress plain
+
+    if [ $? -eq 0 ]; then
+        print_info "Docker image built successfully."
+    else
+        print_error "Failed to build Docker image."
+        exit 1
+    fi
+
+    # Kurtosis enclave run karein
+    print_info "Starting Kurtosis enclave..."
+    kurtosis run --enclave op-devnet github.com/paradigmxyz/optimism-package@odyssey \
+      --args-file https://raw.githubusercontent.com/ithacaxyz/odyssey/main/etc/kurtosis.yaml
+
+    if [ $? -eq 0 ]; then
+        print_info "Kurtosis enclave started successfully."
+    else
+        print_error "Failed to start Kurtosis enclave."
+        exit 1
+    fi
+
+    # Call the menu function to display options
+    node_menu
+}
+
+
+
+# Function to set up wallet extension
+setup_wallet_extension() {
+    print_info "<=========== Setting Up Wallet Extension ==============>"
+    
+    # Prompt for the private key and whitelist addresses
+    read -p "Enter the private key for EXP1_SK: " private_key
+    read -p "Enter the whitelisted addresses (comma-delimited): " whitelist
+
+    # Set environment variables
+    export EXP1_SK="$private_key"
+    export EXP1_WHITELIST="$whitelist"
+
+    print_info "Environment variables set successfully:"
+    print_info "EXP1_SK: $EXP1_SK"
+    print_info "EXP1_WHITELIST: $EXP1_WHITELIST"
+
+    print_info "You can now use the wallet_sendTransaction method with the configured settings."
+    
+    # Call the menu function to display options
+    node_menu
+}
+
+
+
 
 # Function to display menu and handle user input
 node_menu() {
@@ -114,9 +181,10 @@ node_menu() {
     print_info "  Ithaca Odyssey Node Tool Menu   "
     print_info "====================================="
     print_info ""
-    print_info "1. Install-Dependencies"
-    print_info "2. Setup-Node"
-    print_info "3. Exit"
+    print_info "1. Install Dependencies"
+    print_info "2. Setup Node"
+    print_info "3. Setup Optimism Package"
+    print_info "4. Exit"
     print_info ""
     print_info "==============================="
     print_info " Created By : CryptoBuroMaster "
@@ -124,7 +192,7 @@ node_menu() {
     print_info ""  
 
     # Prompt the user for input
-    read -p "Enter your choice (1, 2, or 3): " user_choice
+    read -p "Enter your choice (1, 2, 3, or 4): " user_choice
     
     # Handle user input
     case $user_choice in
@@ -135,15 +203,18 @@ node_menu() {
             setup_node
             ;;
         3)
+            optimism_package
+            ;;
+        4)
             print_info "Exiting the script. Goodbye!"
             exit 0
             ;;
         *)
-            print_error "Invalid choice. Please enter 1, 2, or 3."
+            print_error "Invalid choice. Please enter 1, 2, 3, or 4."
             node_menu # Re-prompt if invalid input
             ;;
     esac
 }
 
-# Call the node_menu function
+# Call the node_menu function to start the script
 node_menu

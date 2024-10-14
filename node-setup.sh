@@ -15,7 +15,6 @@ print_error() {
 
 
 
-
 # Function to install dependencies (Rust in this case)
 install_dependency() {
     print_info "<=========== Install Dependency ==============>"
@@ -69,6 +68,38 @@ install_dependency() {
 
 
 
+# Function to setup the Odyssey node
+setup_node() {
+    print_info "<=========== Setup the Odyssey node ==============>"
+    print_info "Cloning the Odyssey repository..."
+    
+    # Clone the Odyssey repository
+    git clone https://github.com/ithacaxyz/odyssey
+    
+    if [ $? -eq 0 ]; then
+        print_info "Repository cloned successfully."
+    else
+        print_error "Failed to clone the repository."
+        exit 1
+    fi
+
+    # Change directory to odyssey
+    cd odyssey || { print_error "Failed to enter 'odyssey' directory."; exit 1; }
+
+    # Install Odyssey using cargo
+    print_info "Installing Odyssey binary using cargo..."
+    cargo install --path bin/odyssey
+
+    if [ $? -eq 0 ]; then
+        print_info "Odyssey installed successfully."
+    else
+        print_error "Failed to install Odyssey."
+        exit 1
+    fi
+
+    # Call the uni_menu function to display the menu
+    node_menu
+}
 
 
 
@@ -80,8 +111,9 @@ node_menu() {
     print_info "  ithacaxyz Odyssey Node Tool Menu   "
     print_info "====================================="
     print_info ""
-    print_info "1. Install Dependencies (Rust)"
+    print_info "1. Install Dependencies"
     print_info "2. Exit"
+    print_info "3. Setup-Node"
     print_info ""
     print_info "==============================="
     print_info " Created By : CryptoBuroMaster "
@@ -89,7 +121,7 @@ node_menu() {
     print_info ""  
 
     # Prompt the user for input
-    read -p "Enter your choice (1 or 2): " user_choice
+    read -p "Enter your choice (1, 2, or 3): " user_choice
     
     # Handle user input
     case $user_choice in
@@ -100,8 +132,11 @@ node_menu() {
             print_info "Exiting the script. Goodbye!"
             exit 0
             ;;
+        3)
+            setup_node
+            ;;
         *)
-            print_error "Invalid choice. Please enter 1 or 2."
+            print_error "Invalid choice. Please enter 1, 2, or 3."
             node_menu # Re-prompt if invalid input
             ;;
     esac

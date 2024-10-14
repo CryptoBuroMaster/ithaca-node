@@ -108,7 +108,7 @@ setup_node() {
 # Function to display menu and handle user input
 node_menu() {
     print_info "====================================="
-    print_info "  ithacaxyz Odyssey Node Tool Menu   "
+    print_info "  Ithaca Odyssey Node Tool Menu   "
     print_info "====================================="
     print_info ""
     print_info "1. Install-Dependencies"

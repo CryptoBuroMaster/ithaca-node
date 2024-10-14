@@ -111,9 +111,9 @@ node_menu() {
     print_info "  ithacaxyz Odyssey Node Tool Menu   "
     print_info "====================================="
     print_info ""
-    print_info "1. Install Dependencies"
-    print_info "2. Exit"
-    print_info "3. Setup-Node"
+    print_info "1. Install-Dependencies"
+    print_info "2. Setup-Node"
+    print_info "3. Exit"
     print_info ""
     print_info "==============================="
     print_info " Created By : CryptoBuroMaster "
@@ -129,11 +129,11 @@ node_menu() {
             install_dependency
             ;;
         2)
-            print_info "Exiting the script. Goodbye!"
-            exit 0
+            setup_node
             ;;
         3)
-            setup_node
+            print_info "Exiting the script. Goodbye!"
+            exit 0
             ;;
         *)
             print_error "Invalid choice. Please enter 1, 2, or 3."
